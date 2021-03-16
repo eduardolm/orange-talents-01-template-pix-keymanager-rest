@@ -26,7 +26,11 @@ message KeyResponseRest {
   string clientId = 1;
   string pixId = 2;
   string createdAt = 3;
-//  google.protobuf.Timestamp createAt = 3;
+}
+
+message ErrorDetails {
+  int32 code = 1;
+  string message = 2;
 }
 
 enum AccountType {
