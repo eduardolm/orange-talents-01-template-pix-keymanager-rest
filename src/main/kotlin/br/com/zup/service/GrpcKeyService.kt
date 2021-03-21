@@ -2,9 +2,13 @@ package br.com.zup.service
 
 import br.com.zup.*
 import br.com.zup.dto.request.KeyDeleteRequestDto
+import br.com.zup.dto.request.KeyRequestByIdDto
 import br.com.zup.dto.request.KeyRequestDto
 import br.com.zup.dto.response.KeyRemoveResponseDto
+import br.com.zup.dto.response.KeyResponseByIdDto
 import br.com.zup.dto.response.KeyResponseDto
+import br.com.zup.model.Account
+import br.com.zup.model.Organization
 import io.micronaut.grpc.annotation.GrpcService
 import javax.inject.Inject
 
@@ -26,10 +30,13 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
                     .setKey(requestDto.key)
                     .setBankAccount(
                         BankAccount.newBuilder()
-                            .setParticipant(it.instituicao.ispb)
                             .setBranch(it.agencia)
                             .setAccountNumber(it.numero)
                             .setAccountType(it.tipo)
+                            .setInstitution(Institution.newBuilder()
+                                .setName(it.instituicao.nome)
+                                .setParticipant(it.instituicao.ispb)
+                                .build())
                             .build()
                     )
                     .setOwner(
@@ -56,6 +63,37 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
             pixKey = keyRemoveResponse.key,
             participant = keyRemoveResponse.participant,
             deletedAt = keyRemoveResponse.deletedAt
+        )
+    }
+
+    fun buildPixKeyRequest(request: KeyRequestByIdDto): PixKeyRequest {
+
+        return PixKeyRequest.newBuilder()
+            .setPixKey(request.id)
+            .setClientId(request.clientId ?: "")
+            .build()
+    }
+
+    fun buildFindByIdKeyResponse(keyResponseById: PixKeyResponse): KeyResponseByIdDto {
+
+        return KeyResponseByIdDto(
+            pixId = keyResponseById.pixId,
+            clientId = keyResponseById.clientId,
+            keyType = keyResponseById.keyType,
+            pixKey = keyResponseById.pixKey,
+            bankAccount = Account(
+                keyResponseById.account.accountType,
+                Organization(
+                    keyResponseById.account.institution.name,
+                    keyResponseById.account.institution.participant
+                ),
+                keyResponseById.account.branch,
+                keyResponseById.account.accountNumber),
+            owner = br.com.zup.model.Owner(
+                "",
+                keyResponseById.owner.name,
+                keyResponseById.owner.taxIdNumber),
+            createdAt = keyResponseById.createdAt
         )
     }
 }

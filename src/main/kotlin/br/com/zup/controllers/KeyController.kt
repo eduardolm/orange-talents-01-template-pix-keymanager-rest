@@ -2,6 +2,7 @@ package br.com.zup.controllers
 
 import br.com.zup.KeyServiceGrpc
 import br.com.zup.dto.request.KeyDeleteRequestDto
+import br.com.zup.dto.request.KeyRequestByIdDto
 import br.com.zup.dto.request.KeyRequestDto
 import br.com.zup.exception.BankAccountNotFoundException
 import br.com.zup.service.GrpcKeyService
@@ -9,10 +10,7 @@ import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Delete
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
 import io.micronaut.http.exceptions.HttpStatusException
 import io.micronaut.validation.Validated
 import org.slf4j.Logger
@@ -87,7 +85,7 @@ class KeyController(
                     logger.error("Chave ${it.pixId} não encontrada ou não pertence ao usuário.")
                     throw HttpStatusException(HttpStatus.NOT_FOUND, description)
 
-                }else {
+                } else {
                     logger.error("Falha ao acessar o servidor: ${e.message}")
                     throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha ao acessar o servidor.")
                 }
@@ -99,4 +97,39 @@ class KeyController(
 
         return HttpResponse.notFound()
     }
+
+    @Get("/{id}")
+    fun findById(@PathVariable("id") id: String,
+                 @QueryValue("clientId") clientId: String?): HttpResponse<Any?> {
+
+        val request = KeyRequestByIdDto(id, clientId)
+
+        with(request) {
+            try {
+                gRpcClient.retrievePixKey(keyService.buildPixKeyRequest(this))
+
+            } catch (e: StatusRuntimeException) {
+
+                val status = e.status
+                val statusCode = e.status.code
+                val description = status.description
+
+                if (statusCode == Status.Code.NOT_FOUND) {
+                    logger.error("Chave ${this.id} não encontrada.")
+                    throw HttpStatusException(HttpStatus.NOT_FOUND, description)
+
+                } else {
+                    logger.error("Falha ao acessar o servidor: ${e.message}")
+                    throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha ao acessar o servidor.")
+                }
+            }
+        }?.let {
+
+            logger.info("Chave Pix ${it.pixKey} retornada com sucesso.")
+            return HttpResponse.ok(keyService.buildFindByIdKeyResponse(it))
+        }
+
+        return HttpResponse.notFound()
+    }
+
 }
