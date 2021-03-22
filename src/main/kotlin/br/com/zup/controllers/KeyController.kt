@@ -1,5 +1,6 @@
 package br.com.zup.controllers
 
+import br.com.zup.KeyListRequest
 import br.com.zup.KeyServiceGrpc
 import br.com.zup.dto.request.KeyDeleteRequestDto
 import br.com.zup.dto.request.KeyRequestByIdDto
@@ -127,6 +128,43 @@ class KeyController(
 
             logger.info("Chave Pix ${it.pixKey} retornada com sucesso.")
             return HttpResponse.ok(keyService.buildFindByIdKeyResponse(it))
+        }
+
+        return HttpResponse.notFound()
+    }
+
+    @Get("/all/{id}")
+    fun findAll(@PathVariable("id") id: String?): HttpResponse<Any?> {
+
+        if (id.isNullOrBlank())
+            throw IllegalArgumentException("ClientId não pode ser nulo ou vazio.")
+
+        val request = KeyListRequest.newBuilder()
+            .setClientId(id)
+            .build()
+
+        with(request) {
+            try {
+                gRpcClient.list(this)
+
+            } catch (e: StatusRuntimeException) {
+
+                val status = e.status
+                val statusCode = e.status.code
+                val description = status.description
+
+                if (statusCode == Status.Code.NOT_FOUND) {
+                    logger.error("Chave ${this.clientId} não encontrada.")
+                    throw HttpStatusException(HttpStatus.NOT_FOUND, description)
+
+                } else {
+                    logger.error("Falha ao acessar o servidor: ${e.message}")
+                    throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha ao acessar o servidor.")
+                }
+            }
+        }?.let {
+            logger.info("Chaves Pix do cliente: ${request?.clientId} retornadas com sucesso.")
+            return HttpResponse.ok(keyService.buildListResponse(it))
         }
 
         return HttpResponse.notFound()

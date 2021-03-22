@@ -4,9 +4,7 @@ import br.com.zup.*
 import br.com.zup.dto.request.KeyDeleteRequestDto
 import br.com.zup.dto.request.KeyRequestByIdDto
 import br.com.zup.dto.request.KeyRequestDto
-import br.com.zup.dto.response.KeyRemoveResponseDto
-import br.com.zup.dto.response.KeyResponseByIdDto
-import br.com.zup.dto.response.KeyResponseDto
+import br.com.zup.dto.response.*
 import br.com.zup.model.Account
 import br.com.zup.model.Organization
 import io.micronaut.grpc.annotation.GrpcService
@@ -95,5 +93,23 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
                 keyResponseById.owner.taxIdNumber),
             createdAt = keyResponseById.createdAt
         )
+    }
+
+    fun buildListResponse(keyResponseList: KeyListResponse?): PixKeyListByClientIdDto? {
+        val listResponse: MutableList<PixListItemDto> = ArrayList()
+
+        keyResponseList?.let { keyListResponse ->
+            keyListResponse.pixKeysList.forEach {
+                listResponse.add(PixListItemDto(
+                    it.pixId,
+                    it.keyType.toString(),
+                    it.pixKey,
+                    br.com.zup.enums.AccountType.valueOf(it.accountType.toString()),
+                    it.createdAt
+                ))
+        }
+        }
+
+        return keyResponseList?.clientId?.let { PixKeyListByClientIdDto(clientId = it, keyList = listResponse) }
     }
 }
