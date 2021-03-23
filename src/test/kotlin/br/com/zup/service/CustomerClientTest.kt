@@ -27,6 +27,9 @@ class CustomerClientTest {
         mockService = Mockito.mock(CustomerClient::class.java)
     }
 
+    // TODO: Remover estes testes sem sentido. Utilizar essa infraestrutura para mocker este serviço e
+    //  testar GrpcKeyService e Controllers
+
     @Test
     fun `test findByIdAndAccountType when id and account type exist`() {
 

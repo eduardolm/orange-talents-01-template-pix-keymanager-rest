@@ -5,7 +5,6 @@ import br.com.zup.KeyServiceGrpc
 import br.com.zup.dto.request.KeyDeleteRequestDto
 import br.com.zup.dto.request.KeyRequestByIdDto
 import br.com.zup.dto.request.KeyRequestDto
-import br.com.zup.exception.BankAccountNotFoundException
 import br.com.zup.service.GrpcKeyService
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -53,10 +52,6 @@ class KeyController(
                     logger.error("Falha ao acessar o servidor: $description")
                     throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, description)
                 }
-            } catch (e: BankAccountNotFoundException) {
-
-                logger.warn("Conta não encontrada.")
-                throw HttpStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada.")
             }
 
         }?.let {

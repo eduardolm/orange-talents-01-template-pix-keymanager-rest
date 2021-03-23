@@ -8,10 +8,16 @@ import br.com.zup.dto.response.*
 import br.com.zup.model.Account
 import br.com.zup.model.Organization
 import io.micronaut.grpc.annotation.GrpcService
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.exceptions.HttpStatusException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 @GrpcService
 class GrpcKeyService(@Inject val customerClient: CustomerClient) {
+
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     fun buildCreateKeyResponse(response: KeyResponseRest) = KeyResponseDto(
         clientId = response.clientId,
@@ -21,8 +27,14 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
 
     fun buildCreateKeyRequest(requestDto: KeyRequestDto): KeyRequestRest? {
 
+        if (customerClient.findById(requestDto.id).isEmpty) {
+
+            logger.warn("Conta para o clientId: ${requestDto.id} não encontrada.")
+            throw HttpStatusException(HttpStatus.NOT_FOUND, "Conta para o clientId: ${requestDto.id} não encontrada.")
+        }
+
         return customerClient.findByIdAndAccountType(requestDto.id, requestDto.accountType)
-            .map {
+            ?.map {
                 KeyRequestRest.newBuilder()
                     .setKeyType(KeyType.valueOf(requestDto.keyType))
                     .setKey(requestDto.key)
@@ -31,10 +43,12 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
                             .setBranch(it.agencia)
                             .setAccountNumber(it.numero)
                             .setAccountType(it.tipo)
-                            .setInstitution(Institution.newBuilder()
-                                .setName(it.instituicao.nome)
-                                .setParticipant(it.instituicao.ispb)
-                                .build())
+                            .setInstitution(
+                                Institution.newBuilder()
+                                    .setName(it.instituicao.nome)
+                                    .setParticipant(it.instituicao.ispb)
+                                    .build()
+                            )
                             .build()
                     )
                     .setOwner(
@@ -46,7 +60,7 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
                     )
                     .build()
             }
-            .orElseGet { null }
+            ?.orElseGet { null }
     }
 
     fun buildDeleteKeyRequest(keyDeleteRequestDto: KeyDeleteRequestDto): KeyRemoveRequest {
