@@ -39,6 +39,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.mockito:mockito-core")
 }
 
 

@@ -16,6 +16,7 @@ data class KeyRequestDto(
     val keyType: String,
 
     @field:Size(max = 77, message = "Tamanho máximo da chave: 77 caracteres.")
+    @field:NotBlank(message = "É obrigatório informar a chave a ser cadastrada.")
     var key: String?,
 
     @field:NotBlank(message = "É obrigatório informar o tipo de conta.")
