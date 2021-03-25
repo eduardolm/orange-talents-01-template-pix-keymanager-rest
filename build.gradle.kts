@@ -32,7 +32,7 @@ dependencies {
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut:micronaut-http-client")
-    implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
+    implementation("io.micronaut.grpc:micronaut-grpc-client-runtime:2.3.0")
     implementation("javax.annotation:javax.annotation-api")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -40,6 +40,8 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.mockito:mockito-core")
+    testImplementation("org.grpcmock:grpcmock-core:0.5.2")
+    testImplementation("org.grpcmock:grpcmock-junit5:0.5.2")
 }
 
 

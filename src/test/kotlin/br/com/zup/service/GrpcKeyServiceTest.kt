@@ -55,8 +55,6 @@ class GrpcKeyServiceTest {
                 "212233", owner
             )
         )
-
-        customerClient = Mockito.mock(CustomerClient::class.java)
     }
 
     @Test
