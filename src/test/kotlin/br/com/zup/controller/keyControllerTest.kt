@@ -3,6 +3,7 @@ package br.com.zup.controller
 import br.com.zup.*
 import br.com.zup.controllers.KeyController
 import br.com.zup.dto.request.KeyDeleteRequestDto
+import br.com.zup.dto.request.KeyRequestByIdDto
 import br.com.zup.dto.request.KeyRequestDto
 import br.com.zup.dto.response.*
 import br.com.zup.service.CustomerClient
@@ -78,31 +79,43 @@ class KeyControllerTest {
             )
         )
 
-        client = Optional.of(ClientResponseDto("0d1bb194-3c52-4e67-8c35-a93c0af9284f", "Alberto Tavares",
-            "06628726061", institution))
+        client = Optional.of(
+            ClientResponseDto(
+                "0d1bb194-3c52-4e67-8c35-a93c0af9284f", "Alberto Tavares",
+                "06628726061", institution
+            )
+        )
 
         // RequestDTO
-        request = KeyRequestDto("0d1bb194-3c52-4e67-8c35-a93c0af9284f", "CPF", "06628726061",
-            "CONTA_CORRENTE")
+        request = KeyRequestDto(
+            "0d1bb194-3c52-4e67-8c35-a93c0af9284f", "CPF", "06628726061",
+            "CONTA_CORRENTE"
+        )
 
         // gRPC Request
         requestRest = KeyRequestRest.newBuilder()
             .setKeyType(KeyType.valueOf("CPF"))
             .setKey("06628726061")
-            .setBankAccount(BankAccount.newBuilder()
-                .setBranch("0002")
-                .setAccountNumber("123456")
-                .setAccountType("CONTA_CORRENTE")
-                .setInstitution(Institution.newBuilder()
-                    .setName("ITAÚ UNIBANCO S.A.")
-                    .setParticipant("60701190")
-                    .build())
-                .build())
-            .setOwner(Owner.newBuilder()
-                .setId("0d1bb194-3c52-4e67-8c35-a93c0af9284f")
-                .setName("Alberto Tavares")
-                .setTaxIdNumber("06628726061")
-                .build())
+            .setBankAccount(
+                BankAccount.newBuilder()
+                    .setBranch("0002")
+                    .setAccountNumber("123456")
+                    .setAccountType("CONTA_CORRENTE")
+                    .setInstitution(
+                        Institution.newBuilder()
+                            .setName("ITAÚ UNIBANCO S.A.")
+                            .setParticipant("60701190")
+                            .build()
+                    )
+                    .build()
+            )
+            .setOwner(
+                Owner.newBuilder()
+                    .setId("0d1bb194-3c52-4e67-8c35-a93c0af9284f")
+                    .setName("Alberto Tavares")
+                    .setTaxIdNumber("06628726061")
+                    .build()
+            )
             .build()
 
         // GrpcResponse
@@ -112,8 +125,10 @@ class KeyControllerTest {
             .setCreatedAt("2021-03-24T13:51")
             .build()
 
-        responseDto = KeyResponseDto("0d1bb194-3c52-4e67-8c35-a93c0af9284f", "06628726061",
-            "2021-03-24T13:51")
+        responseDto = KeyResponseDto(
+            "0d1bb194-3c52-4e67-8c35-a93c0af9284f", "06628726061",
+            "2021-03-24T13:51"
+        )
     }
 
     @AfterEach
@@ -146,7 +161,7 @@ class KeyControllerTest {
 
         val controller = KeyController(gRpcClient, keyService)
 
-        assertThrows(HttpStatusException::class.java) {controller.create(request)}
+        assertThrows(HttpStatusException::class.java) { controller.create(request) }
     }
 
     @Test
@@ -154,10 +169,12 @@ class KeyControllerTest {
 
         Mockito.`when`(customerClient.findById(Mockito.anyString())).thenReturn(Optional.empty())
 
-        request = KeyRequestDto("", "CPF", "06628726061",
-            "CONTA_CORRENTE")
+        request = KeyRequestDto(
+            "", "CPF", "06628726061",
+            "CONTA_CORRENTE"
+        )
         val controller = KeyController(gRpcClient, keyService)
-        assertThrows(HttpStatusException::class.java) {controller.create(request)}
+        assertThrows(HttpStatusException::class.java) { controller.create(request) }
     }
 
     @Test
@@ -170,7 +187,7 @@ class KeyControllerTest {
         Mockito.`when`(customerClient.findById(Mockito.anyString())).thenReturn(client)
 
         val controller = KeyController(gRpcClient, keyService)
-        assertThrows(HttpStatusException::class.java) {controller.create(request)}
+        assertThrows(HttpStatusException::class.java) { controller.create(request) }
     }
 
     @Test
@@ -182,7 +199,7 @@ class KeyControllerTest {
         Mockito.`when`(customerClient.findById(Mockito.anyString())).thenReturn(client)
 
         val controller = KeyController(gRpcClient, keyService)
-        assertThrows(HttpStatusException::class.java) {controller.create(request)}
+        assertThrows(HttpStatusException::class.java) { controller.create(request) }
     }
 
     @Test
@@ -200,8 +217,10 @@ class KeyControllerTest {
             .setDeletedAt("2021-03-24T22:28")
             .build()
 
-        val deleteResponseDto = KeyRemoveResponseDto(deleteResponse.key, deleteResponse.participant,
-            deleteResponse.deletedAt)
+        val deleteResponseDto = KeyRemoveResponseDto(
+            deleteResponse.key, deleteResponse.participant,
+            deleteResponse.deletedAt
+        )
 
         stubFor(unaryMethod(KeyServiceGrpc.getDeleteMethod()).willReturn(deleteResponse))
 
@@ -221,7 +240,7 @@ class KeyControllerTest {
         stubFor(unaryMethod(KeyServiceGrpc.getDeleteMethod()).willReturn(Status.NOT_FOUND))
 
         val controller = KeyController(gRpcClient, keyService)
-        assertThrows(HttpStatusException::class.java) {controller.delete(deleteRequest)}
+        assertThrows(HttpStatusException::class.java) { controller.delete(deleteRequest) }
     }
 
     @Test
@@ -231,7 +250,7 @@ class KeyControllerTest {
         stubFor(unaryMethod(KeyServiceGrpc.getDeleteMethod()).willReturn(Status.NOT_FOUND))
 
         val controller = KeyController(gRpcClient, keyService)
-        assertThrows(HttpStatusException::class.java) {controller.delete(deleteRequest)}
+        assertThrows(HttpStatusException::class.java) { controller.delete(deleteRequest) }
     }
 
     @Test
@@ -241,11 +260,237 @@ class KeyControllerTest {
         stubFor(unaryMethod(KeyServiceGrpc.getDeleteMethod()).willReturn(Status.UNAVAILABLE))
 
         val controller = KeyController(gRpcClient, keyService)
-        assertThrows(HttpStatusException::class.java) {controller.delete(deleteRequest)}
+        assertThrows(HttpStatusException::class.java) { controller.delete(deleteRequest) }
     }
 
     @Test
     fun `test retrieve pixKey by pixId and clientId`() {
-        // TODO: Terminar implementação dos testes
+        val pixRequest = KeyRequestByIdDto(
+            "0d1bb194-3c52-4e67-8c35-a93c0af9284f",
+            "bc3b1cdd-8b06-4bcd-abe3-11535b275134"
+        )
+
+        val grpcRequest = keyService.buildPixKeyRequest(pixRequest)
+
+        val pixKeyResponse = PixKeyResponse.newBuilder()
+            .setPixId("0d1bb194-3c52-4e67-8c35-a93c0af9284f")
+            .setClientId("bc3b1cdd-8b06-4bcd-abe3-11535b275134")
+            .setKeyType(KeyType.valueOf("CPF"))
+            .setPixKey("06628726061")
+            .setOwner(
+                ResponseOwner.newBuilder()
+                    .setName("Alberto Tavares")
+                    .setTaxIdNumber("06628726061")
+                    .build()
+            )
+            .setAccount(
+                BankAccount.newBuilder()
+                    .setBranch("0001")
+                    .setAccountNumber("212233")
+                    .setAccountType("CONTA_CORRENTE")
+                    .setInstitution(
+                        Institution.newBuilder()
+                            .setName("ITAÚ UNIBANCO S.A.")
+                            .setParticipant("60701190")
+                            .build()
+                    )
+                    .build()
+            )
+            .setCreatedAt("2021-01-15T22:12")
+            .build()
+
+        val pixResponseDto = keyService.buildFindByIdKeyResponse(pixKeyResponse)
+
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(pixKeyResponse))
+
+        val controller = KeyController(gRpcClient, keyService)
+        val result = controller.findById(pixRequest.id, pixRequest.clientId)
+
+        assertEquals(HttpStatus.OK, result.status)
+        verifyThat(calledMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).withRequest(grpcRequest))
+        assertEquals(gRpcClient.retrievePixKey(grpcRequest), pixKeyResponse)
+        assertEquals(pixResponseDto, result.body.get())
+    }
+
+    @Test
+    fun `test retrieve PixKey by passing pixKey`() {
+        val pixRequest = KeyRequestByIdDto(
+            "06628726061",
+            null
+        )
+
+        val grpcRequest = keyService.buildPixKeyRequest(pixRequest)
+
+        val pixKeyResponse = PixKeyResponse.newBuilder()
+            .setPixId("0")
+            .setClientId("0")
+            .setKeyType(KeyType.valueOf("CPF"))
+            .setPixKey("06628726061")
+            .setOwner(
+                ResponseOwner.newBuilder()
+                    .setName("Alberto Tavares")
+                    .setTaxIdNumber("06628726061")
+                    .build()
+            )
+            .setAccount(
+                BankAccount.newBuilder()
+                    .setBranch("0001")
+                    .setAccountNumber("212233")
+                    .setAccountType("CONTA_CORRENTE")
+                    .setInstitution(
+                        Institution.newBuilder()
+                            .setName("ITAÚ UNIBANCO S.A.")
+                            .setParticipant("60701190")
+                            .build()
+                    )
+                    .build()
+            )
+            .setCreatedAt("2021-01-15T22:12")
+            .build()
+
+        val pixResponseDto = keyService.buildFindByIdKeyResponse(pixKeyResponse)
+
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(pixKeyResponse))
+
+        val controller = KeyController(gRpcClient, keyService)
+        val result = controller.findById(pixRequest.id, pixRequest.clientId)
+
+        assertEquals(HttpStatus.OK, result.status)
+        verifyThat(calledMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).withRequest(grpcRequest))
+        assertEquals(gRpcClient.retrievePixKey(grpcRequest), pixKeyResponse)
+        assertEquals(pixResponseDto, result.body.get())
+    }
+
+    @Test
+    fun `test retrieve PixKey by passing an incorrect pixKey`() {
+        val pixRequest = KeyRequestByIdDto("123654789", null)
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(Status.NOT_FOUND))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findById(pixRequest.id, pixRequest.clientId) }
+    }
+
+    @Test
+    fun `test retrieve PixKey by passing incorrect pixId and valid clientId`() {
+        val pixRequest = KeyRequestByIdDto(
+            "bc3b1cdd-8b06-4bcd-abe3-11535b275114",
+            "0d1bb194-3c52-4e67-8c35-a93c0af9284f"
+        )
+
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(Status.NOT_FOUND))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findById(pixRequest.id, pixRequest.clientId) }
+    }
+
+    @Test
+    fun `test retrieve PixKey by passing incorrect pixId and invalid clientId`() {
+        val pixRequest = KeyRequestByIdDto(
+            "bc3b1cdd-8b06-4bcd-abe3-11535b275114",
+            "0d1bb194-3c52-4e67-8c35-a93c0af928gg"
+        )
+
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(Status.NOT_FOUND))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findById(pixRequest.id, pixRequest.clientId) }
+    }
+
+    @Test
+    fun `test retrieve PixKey by passing valid pixId and invalid clientId`() {
+        val pixRequest = KeyRequestByIdDto(
+            "bc3b1cdd-8b06-4bcd-abe3-11535b275134",
+            "0d1bb194-3c52-4e67-8c35-a93c0af928gg"
+        )
+
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(Status.NOT_FOUND))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findById(pixRequest.id, pixRequest.clientId) }
+    }
+
+    @Test
+    fun `test retrieve PixKey when gRPC server is down`() {
+        val pixRequest = KeyRequestByIdDto(
+            "bc3b1cdd-8b06-4bcd-abe3-11535b275134",
+            "0d1bb194-3c52-4e67-8c35-a93c0af928gg"
+        )
+
+        stubFor(unaryMethod(KeyServiceGrpc.getRetrievePixKeyMethod()).willReturn(Status.UNAVAILABLE))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findById(pixRequest.id, pixRequest.clientId) }
+    }
+
+    @Test
+    fun `test list all keys passing blank clientId should throw IllegalArgumentException`() {
+        val request = ""
+        stubFor(unaryMethod(KeyServiceGrpc.getListMethod()).willReturn(Status.NOT_FOUND))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(IllegalArgumentException::class.java) { controller.findAll(request) }
+    }
+
+    @Test
+    fun `test list all keys passing invalid clientId should throw HttpStatusException`() {
+        val request = "0d1bb194-3c52-4e67-8c35-a93c0af9284g"
+        stubFor(unaryMethod(KeyServiceGrpc.getListMethod()).willReturn(Status.NOT_FOUND))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findAll(request) }
+    }
+
+    @Test
+    fun `test list all keys passing valid clientId`() {
+        val request = "0d1bb194-3c52-4e67-8c35-a93c0af9284f"
+        val requestGrpc = KeyListRequest.newBuilder()
+            .setClientId(request)
+            .build()
+
+        val keyResponseList = KeyListResponse.newBuilder()
+            .addPixKeys(KeyListResponse.PixKeyItem.newBuilder()
+                .setPixId("pixId")
+                .setKeyType(KeyType.CPF)
+                .setPixKey("pixKey")
+                .setAccountType(AccountType.CONTA_POUPANCA)
+                .setCreatedAt("2021-02-15T12:22")
+                .build())
+            .addPixKeys( KeyListResponse.PixKeyItem.newBuilder()
+                .setPixId("pixId2")
+                .setKeyType(KeyType.EMAIL)
+                .setPixKey("test@email.com")
+                .setAccountType(AccountType.CONTA_POUPANCA)
+                .setCreatedAt("2021-02-15T12:22")
+                .build())
+            .setClientId("0d1bb194-3c52-4e67-8c35-a93c0af9284f")
+            .build()
+
+        val responseDto = keyService.buildListResponse(keyResponseList)
+        stubFor(unaryMethod(KeyServiceGrpc.getListMethod()).willReturn(keyResponseList))
+
+        val controller = KeyController(gRpcClient, keyService)
+        val result = controller.findAll(request)
+
+        assertEquals(HttpStatus.OK, result.status)
+        verifyThat(calledMethod(KeyServiceGrpc.getListMethod()).withRequest(requestGrpc))
+        assertEquals(gRpcClient.list(requestGrpc), keyResponseList)
+        assertEquals(responseDto, result.body.get())
+    }
+
+    @Test
+    fun `test list all keys when gRPC server is down`() {
+        val request = "0d1bb194-3c52-4e67-8c35-a93c0af9284f"
+        stubFor(unaryMethod(KeyServiceGrpc.getListMethod()).willReturn(Status.UNAVAILABLE))
+
+        val controller = KeyController(gRpcClient, keyService)
+
+        assertThrows(HttpStatusException::class.java) { controller.findAll(request) }
     }
 }
