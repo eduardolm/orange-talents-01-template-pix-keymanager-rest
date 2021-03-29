@@ -34,6 +34,7 @@ dependencies {
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.grpc:micronaut-grpc-client-runtime:2.3.0")
     implementation("javax.annotation:javax.annotation-api")
+    implementation("io.micronaut:micronaut-management")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("io.micronaut:micronaut-http-client")

@@ -11,3 +11,9 @@ grpc:
       address: 'localhost:50051'
       plaintext: true
       max-retry-attempts: 5
+
+endpoints:
+  health:
+    enabled: true
+    sensitive: false
+    details-visible: ANONYMOUS
