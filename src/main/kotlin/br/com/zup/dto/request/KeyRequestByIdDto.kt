@@ -1,5 +1,6 @@
 package br.com.zup.dto.request
 
+import br.com.zup.validators.constraints.ValidUUID
 import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.NotBlank
 
@@ -7,6 +8,8 @@ import javax.validation.constraints.NotBlank
 data class KeyRequestByIdDto(
     @field:NotBlank(message = "Obrigatório informar o pixKey ou pixId")
     val id: String,
-    val clientId: String?)
+    @field: ValidUUID(message = "Não é um formato válido de UUID.")
+    val clientId: String?
+    )
 {
 }
