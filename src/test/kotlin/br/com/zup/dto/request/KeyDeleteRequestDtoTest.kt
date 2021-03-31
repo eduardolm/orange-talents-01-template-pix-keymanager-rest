@@ -32,7 +32,7 @@ class KeyDeleteRequestDtoTest{
 
         val exception = validator.validate(actual)
 
-        assertEquals(1, exception.size)
+        assertEquals(2, exception.size)
     }
 
     @Test
@@ -43,7 +43,7 @@ class KeyDeleteRequestDtoTest{
 
         val exception = validator.validate(actual)
 
-        assertEquals(1, exception.size)
+        assertEquals(2, exception.size)
     }
 
     @Test
@@ -53,7 +53,7 @@ class KeyDeleteRequestDtoTest{
 
         val exception = validator.validate(actual)
 
-        assertEquals(2, exception.size)
+        assertEquals(4, exception.size)
     }
 
     @Test

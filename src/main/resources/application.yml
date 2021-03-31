@@ -8,7 +8,7 @@ grpc:
     max-retry-attempts: 10
   channels:
     key:
-      address: 'localhost:50051'
+      address: ${GRPC_ADDRESS:`localhost:50051`}
       plaintext: true
       max-retry-attempts: 5
 
@@ -17,3 +17,7 @@ endpoints:
     enabled: true
     sensitive: false
     details-visible: ANONYMOUS
+
+itau:
+  contas:
+    url: ${ITAU_URL:`http://localhost:9091`}

@@ -4,6 +4,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.micronaut.validation.validator.Validator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 import javax.inject.Inject
 
 @MicronautTest
@@ -14,7 +15,7 @@ class KeyRequestDtoTest {
 
     @Test
     fun `test create KeyRequestDto with all parameters correctly set`() {
-        val actual = KeyRequestDto("Test1", "Type", "Key", "Account")
+        val actual = KeyRequestDto(UUID.randomUUID().toString(), "Type", "Key", "Account")
 
         val validationResult = validator.validate(actual)
 
@@ -27,12 +28,12 @@ class KeyRequestDtoTest {
 
         val validationResult = validator.validate(actual)
 
-        assertEquals(1, validationResult.size)
+        assertEquals(2, validationResult.size)
     }
 
     @Test
     fun `test create KeyRequestDto with blank keyType`() {
-        val actual = KeyRequestDto("Type", "", "Key", "Account")
+        val actual = KeyRequestDto(UUID.randomUUID().toString(), "", "Key", "Account")
 
         val validationResult = validator.validate(actual)
 
@@ -50,7 +51,7 @@ class KeyRequestDtoTest {
 
     @Test
     fun `test create KeyRequestDto with blank account`() {
-        val actual = KeyRequestDto("Test", "Type", "Key", "")
+        val actual = KeyRequestDto(UUID.randomUUID().toString(), "Type", "Key", "")
 
         val validationResult = validator.validate(actual)
 
