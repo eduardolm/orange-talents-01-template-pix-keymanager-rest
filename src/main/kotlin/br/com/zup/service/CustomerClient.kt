@@ -6,7 +6,7 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import java.util.*
 
-@Client("http://localhost:9091")
+@Client("\${itau.contas.url}")
 interface CustomerClient {
 
     @Get( "/api/v1/clientes/{id}/contas?tipo={tipo}")

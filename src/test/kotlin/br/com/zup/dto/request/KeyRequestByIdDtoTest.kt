@@ -4,6 +4,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.micronaut.validation.validator.Validator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 import javax.inject.Inject
 
 @MicronautTest
@@ -24,7 +25,7 @@ class KeyRequestByIdDtoTest {
 
     @Test
     fun `test create instance when both pixId and clientId are passed to KeyRequestByIdDto constructor`() {
-        val actual = KeyRequestByIdDto("Test", "Test")
+        val actual = KeyRequestByIdDto(UUID.randomUUID().toString(), UUID.randomUUID().toString())
 
         val validationResult = validator.validate(actual)
 
