@@ -1,6 +1,6 @@
 package br.com.zup.model
 
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class BankTest {
@@ -14,9 +14,22 @@ class BankTest {
             accountType = "CONTA_CORRENTE"
         )
 
-        Assertions.assertEquals("123456789", bank.participant)
-        Assertions.assertEquals("0002", bank.branch)
-        Assertions.assertEquals("3216547", bank.accountNumber)
-        Assertions.assertEquals("CONTA_CORRENTE", bank.accountType)
+        assertEquals("123456789", bank.participant)
+        assertEquals("0002", bank.branch)
+        assertEquals("3216547", bank.accountNumber)
+        assertEquals("CONTA_CORRENTE", bank.accountType)
+    }
+
+    @Test
+    fun `test toString`() {
+        val bank: Bank = Bank(
+            participant = "123456789",
+            branch = "0002",
+            accountNumber = "3216547",
+            accountType = "CONTA_CORRENTE"
+        )
+
+        assertEquals("Bank(participant='123456789', branch='0002', accountNumber='3216547', " +
+                "accountType='CONTA_CORRENTE')", bank.toString())
     }
 }
