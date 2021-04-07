@@ -5,6 +5,4 @@ data class Account(
     val accountInstitution: Organization,
     val accountBranch: String,
     val accountNumber: String,
-) {
-
-}
+) {}
