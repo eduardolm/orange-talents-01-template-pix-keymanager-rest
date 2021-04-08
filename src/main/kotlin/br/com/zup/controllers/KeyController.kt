@@ -11,6 +11,7 @@ import io.grpc.StatusRuntimeException
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
+import io.micronaut.http.client.exceptions.ReadTimeoutException
 import io.micronaut.http.exceptions.HttpStatusException
 import io.micronaut.validation.Validated
 import org.slf4j.Logger
@@ -52,6 +53,10 @@ class KeyController(
                     logger.error("Falha ao acessar o servidor: $description")
                     throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, description)
                 }
+            } catch (e1: ReadTimeoutException) {
+
+                logger.error("Falha ao consultar os dados. Erro: ${e1.message}")
+                throw HttpStatusException(HttpStatus.REQUEST_TIMEOUT, "Falha ao consultar os dados.")
             }
 
         }?.let {
@@ -85,6 +90,10 @@ class KeyController(
                     logger.error("Falha ao acessar o servidor: ${e.message}")
                     throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha ao acessar o servidor.")
                 }
+            } catch (e1: ReadTimeoutException) {
+
+                logger.error("Falha ao consultar os dados. Erro: ${e1.message}")
+                throw HttpStatusException(HttpStatus.REQUEST_TIMEOUT, "Falha ao consultar os dados.")
             }
         }?.let {
 
@@ -118,6 +127,10 @@ class KeyController(
                     logger.error("Falha ao acessar o servidor: ${e.message}")
                     throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha ao acessar o servidor.")
                 }
+            } catch (e1: ReadTimeoutException) {
+
+                logger.error("Falha ao consultar os dados. Erro: ${e1.message}")
+                throw HttpStatusException(HttpStatus.REQUEST_TIMEOUT, "Falha ao consultar os dados.")
             }
         }?.let {
 
@@ -156,6 +169,10 @@ class KeyController(
                     logger.error("Falha ao acessar o servidor: ${e.message}")
                     throw HttpStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha ao acessar o servidor.")
                 }
+            } catch (e1: ReadTimeoutException) {
+
+                logger.error("Falha ao consultar os dados. Erro: ${e1.message}")
+                throw HttpStatusException(HttpStatus.REQUEST_TIMEOUT, "Falha ao consultar os dados.")
             }
         }?.let {
             logger.info("Chaves Pix do cliente: ${request?.clientId} retornadas com sucesso.")

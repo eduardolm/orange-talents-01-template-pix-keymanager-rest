@@ -9,6 +9,7 @@ import br.com.zup.model.Account
 import br.com.zup.model.Organization
 import io.micronaut.grpc.annotation.GrpcService
 import io.micronaut.http.HttpStatus
+import io.micronaut.http.client.exceptions.ReadTimeoutException
 import io.micronaut.http.exceptions.HttpStatusException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,40 +28,48 @@ class GrpcKeyService(@Inject val customerClient: CustomerClient) {
 
     fun buildCreateKeyRequest(requestDto: KeyRequestDto): KeyRequestRest? {
 
-        if (customerClient.findById(requestDto.id).isEmpty) {
+        try {
+            if (customerClient.findById(requestDto.id).isEmpty) {
 
-            logger.warn("Conta para o clientId: ${requestDto.id} não encontrada.")
-            throw HttpStatusException(HttpStatus.NOT_FOUND, "Conta para o clientId: ${requestDto.id} não encontrada.")
-        }
-
-        return customerClient.findByIdAndAccountType(requestDto.id, requestDto.accountType)
-            ?.map {
-                KeyRequestRest.newBuilder()
-                    .setKeyType(KeyType.valueOf(requestDto.keyType))
-                    .setKey(requestDto.key)
-                    .setBankAccount(
-                        BankAccount.newBuilder()
-                            .setBranch(it.agencia)
-                            .setAccountNumber(it.numero)
-                            .setAccountType(it.tipo)
-                            .setInstitution(
-                                Institution.newBuilder()
-                                    .setName(it.instituicao.nome)
-                                    .setParticipant(it.instituicao.ispb)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .setOwner(
-                        Owner.newBuilder()
-                            .setId(it.titular.id)
-                            .setName(it.titular.nome)
-                            .setTaxIdNumber(it.titular.cpf)
-                            .build()
-                    )
-                    .build()
+                logger.warn("Conta para o clientId: ${requestDto.id} não encontrada.")
+                throw HttpStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Conta para o clientId: ${requestDto.id} não encontrada."
+                )
             }
-            ?.orElseGet { null }
+
+            return customerClient.findByIdAndAccountType(requestDto.id, requestDto.accountType)
+                ?.map {
+                    KeyRequestRest.newBuilder()
+                        .setKeyType(KeyType.valueOf(requestDto.keyType))
+                        .setKey(requestDto.key)
+                        .setBankAccount(
+                            BankAccount.newBuilder()
+                                .setBranch(it.agencia)
+                                .setAccountNumber(it.numero)
+                                .setAccountType(it.tipo)
+                                .setInstitution(
+                                    Institution.newBuilder()
+                                        .setName(it.instituicao.nome)
+                                        .setParticipant(it.instituicao.ispb)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .setOwner(
+                            Owner.newBuilder()
+                                .setId(it.titular.id)
+                                .setName(it.titular.nome)
+                                .setTaxIdNumber(it.titular.cpf)
+                                .build()
+                        )
+                        .build()
+                }
+                ?.orElseGet { null }
+        } catch (e: ReadTimeoutException) {
+            logger.error("Falha ao consultar o Banco Central. Erro: ${e.message}")
+            return null
+        }
     }
 
     fun buildDeleteKeyRequest(keyDeleteRequestDto: KeyDeleteRequestDto): KeyRemoveRequest {
