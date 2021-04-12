@@ -1,6 +1,9 @@
 micronaut:
   application:
     name: key-manager-rest
+  http:
+    client:
+      read-timeout: ${READ_TIMEOUT:120s}
 
 grpc:
   client:
